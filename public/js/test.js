@@ -1,0 +1,1 @@
+console.log("hey js works on server side");
