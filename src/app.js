@@ -90,7 +90,11 @@ app.get('/help/*', (req, res) => {
 
 
 app.get('*', (req, res) => {
-    res.send("<h2>My 404 page</h2>");
+    // res.send("<h2>My 404 page</h2>");
+
+    res.render('404', {
+        errorMessage: 'Page not found'
+    })
 });
 
 
