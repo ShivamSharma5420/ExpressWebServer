@@ -66,6 +66,23 @@ app.get('/about', (req, res) => {
 });
 
 
+app.get('/Books', (req, res) => {
+
+    if (!req.query.search) {
+        console.log("search query not provided");
+        return res.send('Please provide search query');
+    }
+
+    console.log(req.query.search);
+
+    res.send({
+        books: []
+    })
+
+
+})
+
+
 // app.get('/help', (req, res) => {
 //     res.send("<h2>Help Page</h2>");
 // });
