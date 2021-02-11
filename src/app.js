@@ -83,6 +83,25 @@ app.get('/Books', (req, res) => {
 })
 
 
+//checking the query parameter address if there then sending back the static json
+app.get('/weather', (req, res) => {
+
+    if (!req.query.address) {
+        console.log("address not provided");
+        return res.send({ error: 'please provide address query' })
+    }
+    res.send({
+        forecast: '28',
+        location: 'Agra',
+        address: req.query.address
+
+    })
+});
+
+
+
+
+
 // app.get('/help', (req, res) => {
 //     res.send("<h2>Help Page</h2>");
 // });
