@@ -3,6 +3,8 @@ const express = require('express');
 
 const hbs = require('hbs');
 
+const utils = require('./utils/utils');
+
 
 console.log(__dirname);
 console.log(path.join(__dirname, '../public'));
@@ -74,7 +76,6 @@ app.get('/Books', (req, res) => {
     }
 
     console.log(req.query.search);
-
     res.send({
         books: []
     })
@@ -90,12 +91,38 @@ app.get('/weather', (req, res) => {
         console.log("address not provided");
         return res.send({ error: 'please provide address query' })
     }
-    res.send({
-        forecast: '28',
-        location: 'Agra',
-        address: req.query.address
+    // res.send({
+    //     forecast: '28',
+    //     location: 'Agra',
+    //     address: req.query.address
 
-    })
+    // })
+
+
+    utils.geoCode(req.query.address, (error, data) => {
+        if (error) {
+            res.send({ error });
+        }
+        else {
+
+            utils.weather(data.latitude, data.longitude, (error, forecastData) => {
+                if (error)
+                    return console.log(error);
+
+
+                res.send({
+                    forecast: forecastData.current.temperature,
+                    location: data.location,
+                    address: req.query.address
+                })
+
+            })
+        }
+
+    });
+
+
+
 });
 
 
