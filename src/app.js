@@ -110,11 +110,17 @@ app.get('/weather', (req, res) => {
                     return console.log(error);
 
 
-                res.send({
+                // res.send({
+                //     forecast: forecastData.current.temperature,
+                //     location: data.location,
+                //     address: req.query.address
+                // });
+
+                res.render('weather', {
                     forecast: forecastData.current.temperature,
                     location: data.location,
                     address: req.query.address
-                })
+                });
 
             })
         }
