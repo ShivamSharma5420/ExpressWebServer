@@ -36,6 +36,36 @@ app.use(express.static(defaultPAth));
     res.send("hello express");
 });*/
 
+//if we dont define route in use call then that middleware run before every route call
+app.use((req, res, next) => {
+    console.log("middleware for all")
+    next();
+})
+
+//specific middleware
+app.use('/middle', (req, res, next) => {
+    console.log("1st middleware for /middle");
+    next();
+});
+
+app.use('/middle', (req, res, next) => {
+    console.log("2nd middleware for /middle");
+    next();
+});
+
+app.get('/middle', (req, res) => {
+    console.log("this is main statement");
+
+    res.send("middleware example look into servers console");
+
+
+});
+
+
+
+
+
+
 
 app.get('', (req, res) => {
     //loading index.hbs file from views path
@@ -46,7 +76,10 @@ app.get('', (req, res) => {
 });
 
 
+
+
 app.route('/help').get((req, res) => {
+
     //loading help.hbs file
     res.render('help', {
         title: 'Dynamic Title2',
@@ -156,6 +189,12 @@ app.get('/json', (req, res) => {
 app.get('/help/*', (req, res) => {
     res.send("<h2>article not found");
 });
+
+
+
+
+
+
 
 
 app.get('*', (req, res) => {
