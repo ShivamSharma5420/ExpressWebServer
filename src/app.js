@@ -1,9 +1,12 @@
 const path = require('path');
 const express = require('express');
-
 const hbs = require('hbs');
-
 const utils = require('./utils/utils');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const { send } = require('process');
+
+const createError = require('http-errors');
 
 
 console.log(__dirname);
@@ -28,6 +31,15 @@ app.set('views', viewsPath);
 
 hbs.registerPartials(partialsPath);
 
+app.use(cookieParser());
+
+app.use(session({
+    secret: 'secret-key',
+    saveUninitialized: true,
+    resave: false,
+    cookie: { maxAge: 20000 }
+}));
+
 
 //setup static directory to serve
 app.use(express.static(defaultPAth));
@@ -42,6 +54,8 @@ app.use((req, res, next) => {
     next();
 })
 
+
+
 //specific middleware
 app.use('/middle', (req, res, next) => {
     console.log("1st middleware for /middle");
@@ -53,15 +67,51 @@ app.use('/middle', (req, res, next) => {
     next();
 });
 
-app.get('/middle', (req, res) => {
+app.get('/middle', (req, res, next) => {
     console.log("this is main statement");
 
     res.send("middleware example look into servers console");
+    next();
 
+});
+
+app.use('/middle', (req, res, next) => {
+    console.log("last middleware for /middle");
+    res.end();
+});
+
+
+
+app.get('/cookie', (req, res, next) => {
+    res.cookie("myCookie", "shivam's cookie");
+    console.log("cookie created");
+    res.send("cookie is set for local host");
+
+});
+
+app.get('/cookieRemove', (req, res, next) => {
+    res.clearCookie('myCookie');
+    console.log("Cookie removed");
+    res.send("Cookie removed ");
 
 });
 
 
+app.get('/session', (req, res, next) => {
+
+    if (req.session.views) {
+        req.session.views++;
+        res.write("views: " + req.session.views);
+        res.end();
+    }
+    else {
+        req.session.views = 1;
+        res.write("views: " + req.session.views);
+        res.write("Refresh page now");
+        res.end();
+    }
+
+});
 
 
 
@@ -197,14 +247,29 @@ app.get('/help/*', (req, res) => {
 
 
 
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
     // res.send("<h2>My 404 page</h2>");
-
-    res.render('404', {
+    /* res.render('404', {
         errorMessage: 'Page not found'
-    })
+    })*/
+
+    // const error = new Error('Not found');
+    // error.status = 404;
+    // next(error);
+
+    next(createError.NotFound("Page not found for this url"));
 });
 
+app.use((err, req, res, next) => {
+    res.status = err.status || 500;
+
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message
+        }
+    })
+})
 
 
 
